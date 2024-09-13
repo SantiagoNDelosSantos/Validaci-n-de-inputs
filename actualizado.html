@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campo Numérico</title>
+    <style>
+        input {
+            width: 200px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Campo Numérico</h1>
+
+    <input id="numero" type="text" inputmode="numeric" pattern="^[0-9]+$">
+
+    <input id="numero" type="number" min="1" inputmode="numeric" pattern="^[0-9]+">
+
+    <script>
+        const input = document.getElementById('numero');
+        let valor = '';
+
+        input.addEventListener('beforeinput', (evento) => {
+            const teclaPresionada = evento.data;
+            const esNumero = /^[0-9]$/.test(teclaPresionada);
+            const comienzaPorCero = input.value.length === 0 && teclaPresionada === '0';
+
+            if (!esNumero || comienzaPorCero) {
+                evento.preventDefault();
+            }
+        });
+
+        input.addEventListener('input', () => {
+            const cumpleFormatoEsperado = /^[0-9]+$/.test(input.value);
+
+            if (!cumpleFormatoEsperado) {
+                input.value = valor;
+            } else {
+                valor = input.value;
+            }
+        });
+    </script>
+</body>
+</html>
