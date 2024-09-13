@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación en Múltiples Campos Numéricos</title>
+    <style>
+        input {
+            width: 92%;
+            margin: 4%;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Campos Numéricos</h1>
+
+    <p>Campo 1</p>
+    <input class="validarNumero" type="text" inputmode="numeric">
+
+    <p>Campo 2</p>
+    <input class="validarNumero" type="text" inputmode="numeric">
+
+    <p>Campo 3 (sin clase)</p>
+    <input type="number">
+
+    <script>
+
+        function validarCamposNumericos(selector = '.validarNumero') {
+
+            const inputs = document.querySelectorAll(selector);
+
+            inputs.forEach(input => {
+                let valorValido = '';
+
+                input.addEventListener('beforeinput', (evento) => {
+                    const inputType = evento.inputType;
+                    const data = evento.data;
+                    const teclasPermitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+
+                    if (inputType.startsWith('delete') || teclasPermitidas.includes(evento.inputType) || (inputType.startsWith('insert') && !data)) {
+                        return;
+                    }
+
+                    if (!/^[0-9]$/.test(data)) {
+                        evento.preventDefault();
+                    }
+                });
+
+                input.addEventListener('input', () => {
+                    if (!/^[0-9]*$/.test(input.value)) {
+                        input.value = valorValido;
+                    } else {
+                        valorValido = input.value;
+                    }
+                });
+
+                input.addEventListener('paste', (evento) => {
+                    evento.preventDefault();
+                    const pastedData = (evento.clipboardData || window.clipboardData).getData('text');
+                    if (/^[0-9]+$/.test(pastedData)) {
+                        const newValue = input.value.slice(0, input.selectionStart) + pastedData + input.value.slice(input.selectionEnd);
+                        input.value = newValue;
+                        valorValido = newValue;
+                        input.dispatchEvent(new Event('input'));
+                    }
+                });
+            });
+        }
+
+        // Aplicar la validación a todos los campos con la clase 'validarNumero'
+        validarCamposNumericos();
+    </script>
+</body>
+
+</html>

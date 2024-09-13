@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Validación en Múltiples Campos Numéricos</title>
     <style>
+        /* Estilos básicos para los campos de entrada */
         input {
-            width: 92%;
-            margin: 4%;
-            padding: 10px;
-            font-size: 16px;
+            width: 92%; /* Ancho del input */
+            margin: 4%; /* Márgenes alrededor del input */
+            padding: 10px; /* Espacio interno (padding) del input */
+            font-size: 16px; /* Tamaño de la fuente */
         }
     </style>
 </head>
@@ -17,48 +18,65 @@
 
     <h1>Campos Numéricos</h1>
 
+    <!-- Campo numérico con clase para aplicar la validación -->
     <p>Campo 1</p>
     <input class="typeNumberInput" type="number">
 
+    <!-- Otro campo numérico con la misma clase -->
     <p>Campo 2</p>
     <input class="typeNumberInput" type="number">
 
+    <!-- Campo numérico sin la clase, no se le aplicará la validación del script -->
     <p>Campo 3 (sin clase)</p>
     <input type="number">
 
     <script>
-        // Función para aplicar la validación
+
+        // Función que aplica la validación en los campos con la clase 'typeNumberInput':
         function aplicarValidacionNumerica() {
+
+            // Selecciona todos los inputs que tienen la clase 'typeNumberInput':
             const inputs = document.querySelectorAll('.typeNumberInput');
+            
+            // Itera sobre cada input para aplicar las validaciones:
             inputs.forEach(input => {
-                let valor = '';
-
+                let valor = ''; // Variable para almacenar el valor actual válido del input:
+                
+                // Evento que ocurre antes de que el input cambie (Cuando una tecla es presionada o un valor es pegado):
                 input.addEventListener('beforeinput', (evento) => {
-                    const teclaPresionada = evento.data;
-                    const esNumero = /^[0-9]$/.test(teclaPresionada);
-
-                    // Teclas permitidas para edición como borrar o mover el cursor
+                    // La tecla que el usuario presionó o los datos que intentan insertarse:
+                    const teclaPresionada = evento.data; 
+                    // Verifica si la tecla presionada es un número (0-9):
+                    const esNumero = /^[0-9]$/.test(teclaPresionada); 
+                    // Definimos las teclas que deben estar permitidas incluso si no son números (Borrar, mover cursor, etc.):
                     const teclasPermitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight'];
-
+                    // Si la tecla presionada no es un número y no está en la lista de teclas permitidas, se bloquea la entrada:
                     if (!esNumero && teclaPresionada !== null && !teclasPermitidas.includes(evento.inputType)) {
-                        evento.preventDefault();
+                        // Cancela la acción de entrada:
+                        evento.preventDefault(); 
                     }
                 });
 
+                // Evento que se dispara cada vez que cambia el valor del input:
                 input.addEventListener('input', () => {
-                    const cumpleFormatoEsperado = /^[0-9]*$/.test(input.value); // Aceptar string vacío
-
+                    // Verifica si el valor actual del input cumple con el formato esperado (solo números o vacío). El asterisco (*) permite string vacío, osea cuando se borra todo el contenido:
+                    const cumpleFormatoEsperado = /^[0-9]*$/.test(input.value); 
+                    // Si el valor del input no es válido (Contiene caracteres no permitidos), restaura el valor anterior:
                     if (!cumpleFormatoEsperado) {
-                        input.value = valor;
+                        // Restablece el valor del campo al valor anterior válido:
+                        input.value = valor; 
                     } else {
-                        valor = input.value;
+                        // Actualiza el valor con el nuevo valor válido:
+                        valor = input.value; 
                     }
+
                 });
             });
         }
 
-        // Aplicar la validación a los inputs con la clase .typeNumberInput
+        // Llamada a la función para aplicar la validación en todos los inputs con la clase 'typeNumberInput':
         aplicarValidacionNumerica();
+        
     </script>
 
 </body>
