@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación en Múltiples Campos Numéricos</title>
+    <style>
+        /* Estilos básicos para los campos de entrada */
+        input {
+            width: 92%;           /* Ancho del input */
+            margin: 4%;           /* Márgenes alrededor del input */
+            padding: 10px;        /* Espacio interno del input */
+            font-size: 16px;      /* Tamaño de la fuente */
+        }
+    </style>
+</head>
+<body>
+    <h1>Campos Numéricos</h1>
+    
+    <p>Campo 1</p>
+    <!-- Campo de entrada con clase para validación y configurado para entrada numérica -->
+    <input class="validarNumero" type="text" inputmode="numeric">
+    
+    <p>Campo 2</p>
+    <!-- Otro campo de entrada con la misma configuración -->
+    <input class="validarNumero" type="text" inputmode="numeric">
+    
+    <p>Campo 3 (sin clase)</p>
+    <!-- Campo de entrada sin la clase de validación, para comparación -->
+    <input type="number">
+
+    <script>
+        // Función principal para validar campos numéricos
+        function validarCamposNumericos(selector = '.validarNumero') {
+            // Selecciona todos los inputs que coincidan con el selector
+            const inputs = document.querySelectorAll(selector);
+            
+            // Itera sobre cada input seleccionado
+            inputs.forEach(input => {
+                // Variable para almacenar el último valor válido
+                let valorValido = '';
+
+                // Evento que se dispara antes de que se modifique el input
+                input.addEventListener('beforeinput', (evento) => {
+                    const inputType = evento.inputType;  // Tipo de entrada (e.g., 'insertText', 'deleteContentBackward')
+                    const data = evento.data;            // Dato que se está insertando (null para eliminaciones)
+                    // Lista de teclas específicas permitidas
+                    const teclasPermitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+
+                    // Permite acciones de borrado, teclas de navegación y algunas inserciones especiales
+                    if (inputType.startsWith('delete') || teclasPermitidas.includes(evento.inputType) || (inputType.startsWith('insert') && !data)) {
+                        return;  // Permite la acción
+                    }
+
+                    // Previene la entrada si no es un número
+                    if (!/^[0-9]$/.test(data)) {
+                        evento.preventDefault();  // Cancela la entrada
+                    }
+                });
+
+                // Evento que se dispara después de que el valor del input ha cambiado
+                input.addEventListener('input', () => {
+                    // Verifica si el valor actual es válido (solo números)
+                    if (!/^[0-9]*$/.test(input.value)) {
+                        input.value = valorValido;  // Restaura el último valor válido
+                    } else {
+                        valorValido = input.value;  // Actualiza el valor válido
+                    }
+                });
+
+                // Evento para manejar el pegado de texto
+                input.addEventListener('paste', (evento) => {
+                    evento.preventDefault();  // Previene el pegado por defecto
+                    // Obtiene el texto pegado
+                    const pastedData = (evento.clipboardData || window.clipboardData).getData('text');
+                    // Verifica si el texto pegado contiene solo números
+                    if (/^[0-9]+$/.test(pastedData)) {
+                        // Inserta el texto pegado en la posición del cursor
+                        const newValue = input.value.slice(0, input.selectionStart) + pastedData + input.value.slice(input.selectionEnd);
+                        input.value = newValue;
+                        valorValido = newValue;
+                        // Dispara el evento 'input' para activar otras validaciones si es necesario
+                        input.dispatchEvent(new Event('input'));
+                    }
+                });
+            });
+        }
+
+        // Aplica la validación a todos los campos con la clase 'validarNumero'
+        validarCamposNumericos();
+    </script>
+</body>
+</html>
