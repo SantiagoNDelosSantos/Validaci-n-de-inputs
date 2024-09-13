@@ -52,6 +52,12 @@
                         return;  // Permite la acción
                     }
 
+                    // Previene la entrada de 0 al inicio si el campo está vacío
+                    if (input.value === '' && data === '0') {
+                        evento.preventDefault();  // Cancela la entrada
+                        return;
+                    }
+
                     // Previene la entrada si no es un número
                     if (!/^[0-9]$/.test(data)) {
                         evento.preventDefault();  // Cancela la entrada
@@ -60,11 +66,22 @@
 
                 // Evento que se dispara después de que el valor del input ha cambiado
                 input.addEventListener('input', () => {
-                    // Verifica si el valor actual es válido (solo números)
-                    if (!/^[0-9]*$/.test(input.value)) {
-                        input.value = valorValido;  // Restaura el último valor válido
-                    } else {
-                        valorValido = input.value;  // Actualiza el valor válido
+                    // Elimina ceros iniciales
+                    let newValue = input.value.replace(/^0+/, '');
+                    
+                    // Si el valor es vacío después de eliminar ceros, establece a vacío
+                    if (newValue === '') {
+                        input.value = '';
+                        valorValido = '';
+                    } 
+                    // Si el valor es válido (comienza con 1-9 seguido de cualquier número de dígitos), actualiza
+                    else if (/^[1-9][0-9]*$/.test(newValue)) {
+                        input.value = newValue;
+                        valorValido = newValue;
+                    } 
+                    // Si no es válido, restaura al último valor válido
+                    else {
+                        input.value = valorValido;
                     }
                 });
 
@@ -73,8 +90,8 @@
                     evento.preventDefault();  // Previene el pegado por defecto
                     // Obtiene el texto pegado
                     const pastedData = (evento.clipboardData || window.clipboardData).getData('text');
-                    // Verifica si el texto pegado contiene solo números
-                    if (/^[0-9]+$/.test(pastedData)) {
+                    // Verifica si el texto pegado contiene solo números y no comienza con 0
+                    if (/^[1-9][0-9]*$/.test(pastedData)) {
                         // Inserta el texto pegado en la posición del cursor
                         const newValue = input.value.slice(0, input.selectionStart) + pastedData + input.value.slice(input.selectionEnd);
                         input.value = newValue;
