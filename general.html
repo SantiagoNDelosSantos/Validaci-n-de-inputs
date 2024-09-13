@@ -36,15 +36,17 @@
                 input.addEventListener('beforeinput', (evento) => {
                     const teclaPresionada = evento.data;
                     const esNumero = /^[0-9]$/.test(teclaPresionada);
-                    const comienzaPorCero = input.value.length === 0 && teclaPresionada === '0';
 
-                    if (!esNumero || comienzaPorCero) {
+                    // Teclas permitidas para edición como borrar o mover el cursor
+                    const teclasPermitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight'];
+
+                    if (!esNumero && teclaPresionada !== null && !teclasPermitidas.includes(evento.inputType)) {
                         evento.preventDefault();
                     }
                 });
 
                 input.addEventListener('input', () => {
-                    const cumpleFormatoEsperado = /^[0-9]+$/.test(input.value);
+                    const cumpleFormatoEsperado = /^[0-9]*$/.test(input.value); // Aceptar string vacío
 
                     if (!cumpleFormatoEsperado) {
                         input.value = valor;
