@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación en Múltiples Campos Numéricos</title>
+    <style>
+        input {
+            width: 92%;
+            margin: 4%;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Campos Numéricos</h1>
+
+    <p>Campo 1</p>
+    <input class="typeNumberInput" type="number">
+
+    <p>Campo 2</p>
+    <input class="typeNumberInput" type="number">
+
+    <p>Campo 3 (sin clase)</p>
+    <input type="number">
+
+    <script>
+        // Función para aplicar la validación
+        function aplicarValidacionNumerica() {
+            const inputs = document.querySelectorAll('.typeNumberInput');
+            inputs.forEach(input => {
+                let valor = '';
+
+                input.addEventListener('beforeinput', (evento) => {
+                    const teclaPresionada = evento.data;
+                    const esNumero = /^[0-9]$/.test(teclaPresionada);
+                    const comienzaPorCero = input.value.length === 0 && teclaPresionada === '0';
+
+                    if (!esNumero || comienzaPorCero) {
+                        evento.preventDefault();
+                    }
+                });
+
+                input.addEventListener('input', () => {
+                    const cumpleFormatoEsperado = /^[0-9]+$/.test(input.value);
+
+                    if (!cumpleFormatoEsperado) {
+                        input.value = valor;
+                    } else {
+                        valor = input.value;
+                    }
+                });
+            });
+        }
+
+        // Aplicar la validación a los inputs con la clase .typeNumberInput
+        aplicarValidacionNumerica();
+    </script>
+
+</body>
+</html>
