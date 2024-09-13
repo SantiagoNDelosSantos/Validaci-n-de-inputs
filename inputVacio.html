@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        function estaVacio(valor) {
+            // Verificar si el valor es undefined o null
+            if (valor === undefined || valor === null) {
+                return true;
+            }
+            // Convertir el valor a string para manejar campos numéricos y de texto
+            let valorString = String(valor);
+            // Verificar si la cadena está vacía o solo contiene espacios en blanco
+            if (valorString.length === 0 || /^[\s]*$/.test(valorString)) {
+                return true;
+            }
+            // Si no se cumple ninguna de las condiciones anteriores, el valor no está vacío
+            return false;
+        }
+
+        // Ejemplos de uso:
+        console.log(estaVacio('')); // true
+        console.log(estaVacio('  ')); // true
+        console.log(estaVacio(null)); // true
+        console.log(estaVacio(undefined)); // true
+        console.log(estaVacio('hola')); // false
+        console.log(estaVacio('  hola  ')); // false
+        console.log(estaVacio('0')); // false
+        console.log(estaVacio(0)); // false
+    </script>
+</body>
+
+</html>
