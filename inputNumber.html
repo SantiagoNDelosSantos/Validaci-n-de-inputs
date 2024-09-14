@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,24 +8,29 @@
     <style>
         /* Estilos básicos para los campos de entrada */
         input {
-            width: 92%;           /* Ancho del input */
-            margin: 4%;           /* Márgenes alrededor del input */
-            padding: 10px;        /* Espacio interno del input */
-            font-size: 16px;      /* Tamaño de la fuente */
+            width: 92%;
+            /* Ancho del input */
+            margin: 4%;
+            /* Márgenes alrededor del input */
+            padding: 10px;
+            /* Espacio interno del input */
+            font-size: 16px;
+            /* Tamaño de la fuente */
         }
     </style>
 </head>
+
 <body>
     <h1>Campos Numéricos</h1>
-    
+
     <p>Campo 1</p>
     <!-- Campo de entrada con clase para validación y configurado para entrada numérica -->
     <input class="validarNumero" type="text" inputmode="numeric">
-    
+
     <p>Campo 2</p>
     <!-- Otro campo de entrada con la misma configuración -->
     <input class="validarNumero" type="text" inputmode="numeric">
-    
+
     <p>Campo 3 (sin clase)</p>
     <!-- Campo de entrada sin la clase de validación, para comparación -->
     <input type="number">
@@ -34,7 +40,7 @@
         function validarCamposNumericos(selector = '.validarNumero') {
             // Selecciona todos los inputs que coincidan con el selector
             const inputs = document.querySelectorAll(selector);
-            
+
             // Itera sobre cada input seleccionado
             inputs.forEach(input => {
                 // Variable para almacenar el último valor válido
@@ -68,38 +74,58 @@
                 input.addEventListener('input', () => {
                     // Elimina ceros iniciales
                     let newValue = input.value.replace(/^0+/, '');
-                    
+
                     // Si el valor es vacío después de eliminar ceros, establece a vacío
                     if (newValue === '') {
                         input.value = '';
                         valorValido = '';
-                    } 
+                    }
                     // Si el valor es válido (comienza con 1-9 seguido de cualquier número de dígitos), actualiza
                     else if (/^[1-9][0-9]*$/.test(newValue)) {
                         input.value = newValue;
                         valorValido = newValue;
-                    } 
+                    }
                     // Si no es válido, restaura al último valor válido
                     else {
                         input.value = valorValido;
                     }
                 });
 
-                // Evento para manejar el pegado de texto
-                input.addEventListener('paste', (evento) => {
-                    evento.preventDefault();  // Previene el pegado por defecto
-                    // Obtiene el texto pegado
-                    const pastedData = (evento.clipboardData || window.clipboardData).getData('text');
-                    // Verifica si el texto pegado contiene solo números y no comienza con 0
+                // Evento para manejar el pegado de texto:
+                input.addEventListener('paste', async (evento) => {
+
+                    // Prevenimos el comportamiento por defecto del evento paste:
+                    evento.preventDefault();
+                    let pastedData = '';
+                    // Intentamos obtener el texto pegado usando el API moderno del portapapeles:
+                    try {
+                        pastedData = await navigator.clipboard.readText();
+                    } catch (error) {
+                        // Si el API moderno falla, intentamos el método tradicional:
+                        if (evento.clipboardData && evento.clipboardData.getData) {
+                            pastedData = evento.clipboardData.getData('text/plain');
+                        } else {
+                            console.warn('No se pudo acceder al portapapeles');
+                            return;
+                        }
+                    }
+                    // Validamos que el texto pegado sea un número positivo (Sin ceros a la izquierda):
                     if (/^[1-9][0-9]*$/.test(pastedData)) {
-                        // Inserta el texto pegado en la posición del cursor
-                        const newValue = input.value.slice(0, input.selectionStart) + pastedData + input.value.slice(input.selectionEnd);
+                        // Obtenemos la posición del cursor (inicio y fin de la selección):
+                        const selStart = input.selectionStart || 0;
+                        const selEnd = input.selectionEnd || 0;
+                        // Construimos el nuevo valor del input, insertando el texto pegado:
+                        const newValue = input.value.slice(0, selStart) + pastedData + input.value.slice(selEnd);
+                        // Actualizamos el valor del input:
                         input.value = newValue;
+                        // Actualizamos la variable valorValido con el nuevo valor:
                         valorValido = newValue;
-                        // Dispara el evento 'input' para activar otras validaciones si es necesario
+                        // Disparamos manualmente el evento 'input' para notificar cambios:
                         input.dispatchEvent(new Event('input'));
                     }
                 });
+
+
             });
         }
 
@@ -107,4 +133,5 @@
         validarCamposNumericos();
     </script>
 </body>
+
 </html>
